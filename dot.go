@@ -66,15 +66,39 @@ func Set(obj interface{}, prop string, value interface{}) error {
 	// fmt.Println(arr)
 	var err error
 	var key string
+	var effectiveObj = obj
 	last, arr := arr[len(arr)-1], arr[:len(arr)-1]
 	for _, key = range arr {
-		obj, err = getProperty(obj, key)
+		effectiveObj, err = getProperty(effectiveObj, key)
 		if err != nil {
 			return err
 		}
 	}
 
-	return setProperty(obj, last, value)
+	if effectiveObj == nil {
+		propPath := strings.Split(prop, ".")
+		currentPath := ""
+		for i, prop := range propPath {
+			if currentPath != "" {
+				currentPath += "."
+			}
+			currentPath += prop
+
+			testVal, err := getProperty(obj, currentPath)
+			if err != nil {
+				return err
+			}
+			if testVal == nil && i < len(propPath) - 1 {
+				if err := setProperty(obj, currentPath, make(map[string]interface{})); err != nil {
+					return err
+				}
+			}
+		}
+
+		return Set(obj, prop, value)
+	}
+
+	return setProperty(effectiveObj, last, value)
 }
 
 func setProperty(obj interface{}, prop string, val interface{}) error {
