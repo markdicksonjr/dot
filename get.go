@@ -71,6 +71,9 @@ func GetString(obj interface{}, props ...string) (string, error) {
 
 // Loop through this to get properties via dot notation
 func getProperty(obj interface{}, prop string) (interface{}, error) {
+	if obj == nil {
+		return nil, nil
+	}
 
 	if reflect.TypeOf(obj).Kind() == reflect.Map {
 
