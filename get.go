@@ -9,6 +9,10 @@ import (
 // Get will return the value in obj at the "location" given by dot notation property candidates.
 // The candidates are processed in the order given, and the first non-nil result is returned.
 func Get(obj interface{}, props ...string) (interface{}, error) {
+	if obj == nil {
+		return nil, nil
+	}
+
 	for _, prop := range props {
 
 		// Get the array access
@@ -33,6 +37,10 @@ func Get(obj interface{}, props ...string) (interface{}, error) {
 // cast to a string that isn't the empty string.  Will return "" if the
 // property doesn't exist.
 func GetString(obj interface{}, props ...string) (string, error) {
+	if obj == nil {
+		return "", nil
+	}
+
 	for _, prop := range props {
 
 		// Get the array access
