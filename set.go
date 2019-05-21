@@ -7,58 +7,6 @@ import (
 	"strings"
 )
 
-// Get will return the value in obj at the "location" given by dot notation property candidates.
-// The candidates are processed in the order given, and the first non-nil result is returned.
-func Get(obj interface{}, props ...string) (interface{}, error) {
-	for _, prop := range props {
-
-		// Get the array access
-		arr := strings.Split(prop, ".")
-
-		var err error
-		for _, key := range arr {
-			obj, err = getProperty(obj, key)
-			if err != nil {
-				return nil, err
-			}
-			if obj == nil {
-				continue
-			}
-		}
-	}
-	return obj, nil
-}
-
-// Loop through this to get properties via dot notation
-func getProperty(obj interface{}, prop string) (interface{}, error) {
-
-	if reflect.TypeOf(obj).Kind() == reflect.Map {
-
-		val := reflect.ValueOf(obj)
-
-		valueOf := val.MapIndex(reflect.ValueOf(prop))
-
-		if valueOf == reflect.Zero(reflect.ValueOf(prop).Type()) {
-			return nil, nil
-		}
-
-		idx := val.MapIndex(reflect.ValueOf(prop))
-
-		if !idx.IsValid() {
-			return nil, nil
-		}
-		return idx.Interface(), nil
-	}
-
-	kind := reflect.TypeOf(obj).Kind()
-	if kind == reflect.Slice {
-		return obj, nil
-	}
-
-	prop = strings.Title(prop)
-	return reflections.GetField(obj, prop)
-}
-
 func Set(obj interface{}, prop string, value interface{}) error {
 	// Get the array access
 	arr := strings.Split(prop, ".")
