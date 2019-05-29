@@ -25,7 +25,7 @@ func Get(obj interface{}, props ...string) (interface{}, error) {
 				return nil, err
 			}
 			if obj == nil {
-				continue
+				return nil, nil
 			}
 		}
 	}
