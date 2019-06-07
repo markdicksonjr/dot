@@ -8,15 +8,25 @@ import (
 )
 
 func Set(obj interface{}, prop string, value interface{}) error {
+	// trim outer spaces from property
 	prop = strings.TrimSpace(prop)
+
+	//if len(prop) == 0 {
+	//	return errors.New("zero-length properties are not allowed")
+	//}
+
+	if prop[0] == '.' {
+		return errors.New("dot-set property may not start with '.'")
+	}
+
 	if prop[len(prop) - 1] == '.' {
 		return errors.New("dot-set property may not end in '.'")
 	}
 
-	// Get the array access
+	// get the array access
 	arr := strings.Split(prop, ".")
 
-	// fmt.Println(arr)
+	// get each level of property, all the way down to the leaf
 	var err error
 	var key string
 	var effectiveObj = obj
@@ -31,25 +41,26 @@ func Set(obj interface{}, prop string, value interface{}) error {
 	// if we need to allocate all the way down to the object
 	if effectiveObj == nil {
 		propPath := strings.Split(prop, ".")
-		currentPath := ""
-		for i, prop := range propPath {
-			if currentPath != "" {
-				currentPath += "."
-			}
-			currentPath += prop
 
-			testVal, err := getProperty(obj, currentPath)
-			if err != nil {
+		// if we're at the end of props
+		if len(propPath) == 1 {
+			if err := setProperty(obj, propPath[0], value); err != nil {
 				return err
 			}
-			if testVal == nil && i < len(propPath)-1 {
-				if err := setProperty(obj, currentPath, make(map[string]interface{})); err != nil {
-					return err
-				}
-			}
+			return nil
 		}
 
-		return Set(obj, prop, value)
+
+		if err := setProperty(obj, propPath[0], make(map[string]interface{})); err != nil {
+			return err
+		}
+
+		innerProp, err := getProperty(obj, propPath[0])
+		if err != nil {
+			return err
+		}
+
+		return Set(innerProp, strings.Join(propPath[1:], "."), value)
 	}
 
 	return setProperty(effectiveObj, last, value)
