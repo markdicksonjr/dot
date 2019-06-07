@@ -8,6 +8,11 @@ import (
 )
 
 func Set(obj interface{}, prop string, value interface{}) error {
+	prop = strings.TrimSpace(prop)
+	if prop[len(prop) - 1] == '.' {
+		return errors.New("dot-set property may not end in '.'")
+	}
+
 	// Get the array access
 	arr := strings.Split(prop, ".")
 
@@ -23,6 +28,7 @@ func Set(obj interface{}, prop string, value interface{}) error {
 		}
 	}
 
+	// if we need to allocate all the way down to the object
 	if effectiveObj == nil {
 		propPath := strings.Split(prop, ".")
 		currentPath := ""
