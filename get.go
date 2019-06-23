@@ -35,10 +35,12 @@ func Get(obj interface{}, props ...string) (interface{}, error) {
 // GetString does what Get does, except it continues through props until
 // it not only gets a non-nil value, but also gets something that can be
 // cast to a string that isn't the empty string.  Will return "" if the
-// property doesn't exist.
-func GetString(obj interface{}, props ...string) (string, error) {
+// property doesn't exist or could not be coerced.
+// It can't be implemented by attempting to coerce Get once complete,
+// because of the fallback logic for when more than one prop is passed.
+func GetString(obj interface{}, props ...string) string {
 	if obj == nil {
-		return "", nil
+		return ""
 	}
 
 	for _, prop := range props {
@@ -50,7 +52,7 @@ func GetString(obj interface{}, props ...string) (string, error) {
 		for _, key := range arr {
 			obj, err = getProperty(obj, key)
 			if err != nil {
-				return "", err
+				return ""
 			}
 			if obj == nil {
 				continue
@@ -60,13 +62,112 @@ func GetString(obj interface{}, props ...string) (string, error) {
 		if obj != nil {
 			asString, ok := obj.(string)
 			if ok && asString != "" {
-				return asString, nil
+				return asString
 			} else {
 				obj = nil
 			}
 		}
 	}
-	return "", nil
+	return ""
+}
+
+// GetInt64 does what Get does, except it continues through props until
+// it not only gets a non-nil value, but also gets something that can be
+// cast/coerced to an int64 value.  Will return 0 if the property doesn't
+// exist or could not be coerced.
+// It can't be implemented by attempting to coerce Get once complete,
+// because of the fallback logic for when more than one prop is passed.
+func GetInt64(obj interface{}, props ...string) int64 {
+	if obj == nil {
+		return 0
+	}
+
+	for _, prop := range props {
+
+		// Get the array access
+		arr := strings.Split(prop, ".")
+
+		var err error
+		for _, key := range arr {
+			obj, err = getProperty(obj, key)
+			if err != nil {
+				return 0
+			}
+			if obj == nil {
+				continue
+			}
+		}
+
+		if obj != nil {
+			as64, ok := obj.(int64)
+			if ok {
+				return as64
+			}
+
+			as32, ok := obj.(int32)
+			if ok {
+				return int64(as32)
+			}
+
+			asInt, ok := obj.(int)
+			if ok {
+				return int64(asInt)
+			}
+
+			obj = nil
+		}
+	}
+	return 0
+}
+
+// GetFloat64 does what Get does, except it continues through props until
+// it not only gets a non-nil value, but also gets something that can be
+// cast/coerced to a float64 value.  Will return 0 if the property doesn't
+// exist or could not be coerced.
+// It can't be implemented by attempting to coerce Get once complete,
+// because of the fallback logic for when more than one prop is passed.
+func GetFloat64(obj interface{}, props ...string) float64 {
+	if obj == nil {
+		return 0
+	}
+
+	for _, prop := range props {
+
+		// Get the array access
+		arr := strings.Split(prop, ".")
+
+		var err error
+		for _, key := range arr {
+			obj, err = getProperty(obj, key)
+			if err != nil {
+				return 0
+			}
+			if obj == nil {
+				continue
+			}
+		}
+
+		if obj != nil {
+			as64, ok := obj.(float64)
+			if ok {
+				return as64
+			}
+
+			as32, ok := obj.(float32)
+			if ok {
+				return float64(as32)
+			}
+
+
+			asInt, ok := obj.(int)
+			if ok {
+				return float64(asInt)
+			}
+
+			obj = nil
+		}
+	}
+	return 0
 }
 
 // Loop through this to get properties via dot notation
