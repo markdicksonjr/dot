@@ -65,3 +65,30 @@ func TestGetFloat64(t *testing.T) {
 		t.Error("a.e was not 0")
 	}
 }
+
+func TestGetString(t *testing.T) {
+	data := make(map[string]interface{})
+	data["biz"] = "tammy"
+	res := GetString(data, "biz")
+	if res != "tammy" {
+		t.Error("result did not equal tammy")
+	}
+}
+
+func TestGetStringFallback(t *testing.T) {
+	data := make(map[string]interface{})
+	data["b"] = "todd"
+	res := GetString(data, "a", "b")
+	if res != "todd" {
+		t.Error("result did not equal todd - it should have fallen back")
+	}
+}
+
+func TestGetStringFallbackMiss(t *testing.T) {
+	data := make(map[string]interface{})
+	data["b"] = "todd"
+	res := GetString(data, "a", "c")
+	if res != "" {
+		t.Error("result did not equal '' when no match was found during fallback")
+	}
+}

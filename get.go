@@ -45,26 +45,28 @@ func GetString(obj interface{}, props ...string) string {
 
 	for _, prop := range props {
 
-		// Get the array access
+		// get the array access
 		arr := strings.Split(prop, ".")
+
+		objCursor := obj
 
 		var err error
 		for _, key := range arr {
-			obj, err = getProperty(obj, key)
+			objCursor, err = getProperty(objCursor, key)
 			if err != nil {
 				return ""
 			}
-			if obj == nil {
+			if objCursor == nil {
 				continue
 			}
 		}
 
-		if obj != nil {
-			asString, ok := obj.(string)
+		if objCursor != nil {
+			asString, ok := objCursor.(string)
 			if ok && asString != "" {
 				return asString
 			} else {
-				obj = nil
+				objCursor = nil
 			}
 		}
 	}
