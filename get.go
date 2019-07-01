@@ -3,6 +3,7 @@ package dot
 import (
 	"github.com/oleiade/reflections"
 	"reflect"
+	"strconv"
 	"strings"
 )
 
@@ -34,8 +35,8 @@ func Get(obj interface{}, props ...string) (interface{}, error) {
 
 // GetString does what Get does, except it continues through props until
 // it not only gets a non-nil value, but also gets something that can be
-// cast to a string that isn't the empty string.  Will return "" if the
-// property doesn't exist or could not be coerced.
+// cast or coerced to a string that isn't the empty string.  Will return
+// "" if the property doesn't exist or could not be coerced.
 // It can't be implemented by attempting to coerce Get once complete,
 // because of the fallback logic for when more than one prop is passed.
 func GetString(obj interface{}, props ...string) string {
@@ -54,7 +55,7 @@ func GetString(obj interface{}, props ...string) string {
 		for _, key := range arr {
 			objCursor, err = getProperty(objCursor, key)
 			if err != nil {
-				return ""
+				return "" // TODO: review - maybe we want to do a fallback, which would mean "continue" here
 			}
 			if objCursor == nil {
 				continue
@@ -66,6 +67,16 @@ func GetString(obj interface{}, props ...string) string {
 			if ok && asString != "" {
 				return asString
 			} else {
+				asInt64, ok := CoerceInt64(objCursor)
+				if ok {
+					return strconv.Itoa(int(asInt64))
+				}
+
+				asFloat64, ok := CoerceFloat64(objCursor)
+				if ok {
+					return strconv.FormatFloat(asFloat64, 'f', -1, 64)
+				}
+
 				objCursor = nil
 			}
 		}
@@ -101,25 +112,34 @@ func GetInt64(obj interface{}, props ...string) int64 {
 		}
 
 		if obj != nil {
-			as64, ok := obj.(int64)
+			as64, ok := CoerceInt64(obj)
 			if ok {
 				return as64
-			}
-
-			as32, ok := obj.(int32)
-			if ok {
-				return int64(as32)
-			}
-
-			asInt, ok := obj.(int)
-			if ok {
-				return int64(asInt)
 			}
 
 			obj = nil
 		}
 	}
 	return 0
+}
+
+func CoerceInt64(obj interface{}) (int64, bool) {
+	as64, ok := obj.(int64)
+	if ok {
+		return as64, true
+	}
+
+	as32, ok := obj.(int32)
+	if ok {
+		return int64(as32), true
+	}
+
+	asInt, ok := obj.(int)
+	if ok {
+		return int64(asInt), true
+	}
+
+	return 0, false
 }
 
 // GetFloat64 does what Get does, except it continues through props until
@@ -150,26 +170,35 @@ func GetFloat64(obj interface{}, props ...string) float64 {
 		}
 
 		if obj != nil {
-			as64, ok := obj.(float64)
+			as64, ok := CoerceFloat64(obj)
 			if ok {
 				return as64
-			}
-
-			as32, ok := obj.(float32)
-			if ok {
-				return float64(as32)
-			}
-
-
-			asInt, ok := obj.(int)
-			if ok {
-				return float64(asInt)
 			}
 
 			obj = nil
 		}
 	}
 	return 0
+}
+
+func CoerceFloat64(obj interface{}) (float64, bool) {
+	as64, ok := obj.(float64)
+	if ok {
+		return as64, true
+	}
+
+	as32, ok := obj.(float32)
+	if ok {
+		return float64(as32), true
+	}
+
+
+	asInt, ok := obj.(int)
+	if ok {
+		return float64(asInt), true
+	}
+
+	return 0, false
 }
 
 // Loop through this to get properties via dot notation

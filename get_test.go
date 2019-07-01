@@ -75,6 +75,25 @@ func TestGetString(t *testing.T) {
 	}
 }
 
+
+func TestGetStringFromFloatCoercion(t *testing.T) {
+	data := make(map[string]interface{})
+	data["rough"] = 89.12
+	res := GetString(data, "rough")
+	if res != "89.12" {
+		t.Error("result did not equal 89.12 as a string")
+	}
+}
+
+func TestGetStringFromIntCoercion(t *testing.T) {
+	data := make(map[string]interface{})
+	data["rough"] = 801
+	res := GetString(data, "rough")
+	if res != "801" {
+		t.Error("result did not equal 801 as a string")
+	}
+}
+
 func TestGetStringFallback(t *testing.T) {
 	data := make(map[string]interface{})
 	data["b"] = "todd"
