@@ -1,6 +1,7 @@
 package dot
 
 import (
+	"errors"
 	"github.com/oleiade/reflections"
 	"reflect"
 	"strconv"
@@ -9,28 +10,47 @@ import (
 
 // Get will return the value in obj at the "location" given by dot notation property candidates.
 // The candidates are processed in the order given, and the first non-nil result is returned.
+// If a property
 func Get(obj interface{}, props ...string) (interface{}, error) {
 	if obj == nil {
 		return nil, nil
 	}
 
+	// allow fallback to other properties if props earlier in the list
+	// have errors (probably because they don't exist)
+	var lastError error
+
+	// loop through each property option
 	for _, prop := range props {
 
-		// Get the array access
+		// get the array for sub-properties to access
 		arr := strings.Split(prop, ".")
 
+		// initialize a cursor for the current descendent of obj
+		objCursor := obj
+
+		// continue to follow the dot-path, using the cursor
 		var err error
 		for _, key := range arr {
-			obj, err = getProperty(obj, key)
+			objCursor, err = getProperty(objCursor, key)
+
+			// if we can't follow the path
 			if err != nil {
-				return nil, err
-			}
-			if obj == nil {
-				return nil, nil
+
+				// mark it as the most recent error and move to the next property option
+				lastError = err
+				break
 			}
 		}
+
+		// if we ended up picking a non-nil leaf, return it (don't process more options)
+		// note that lastError is no longer applicable, as we found a valid fallback
+		if objCursor != nil {
+			return objCursor, nil
+		}
 	}
-	return obj, nil
+
+	return nil, lastError
 }
 
 // GetString does what Get does, except it continues through props until
@@ -55,9 +75,6 @@ func GetString(obj interface{}, props ...string) string {
 		for _, key := range arr {
 			objCursor, err = getProperty(objCursor, key)
 			if err != nil {
-				return "" // TODO: review - maybe we want to do a fallback, which would mean "continue" here
-			}
-			if objCursor == nil {
 				continue
 			}
 		}
@@ -192,7 +209,6 @@ func CoerceFloat64(obj interface{}) (float64, bool) {
 		return float64(as32), true
 	}
 
-
 	asInt, ok := obj.(int)
 	if ok {
 		return float64(asInt), true
@@ -220,7 +236,7 @@ func getProperty(obj interface{}, prop string) (interface{}, error) {
 		idx := val.MapIndex(reflect.ValueOf(prop))
 
 		if !idx.IsValid() {
-			return nil, nil
+			return nil, errors.New("property " + prop + " not found")
 		}
 		return idx.Interface(), nil
 	}

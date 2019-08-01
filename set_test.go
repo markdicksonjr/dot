@@ -3,13 +3,39 @@ package dot
 import "testing"
 
 func TestTopLevelSet(t *testing.T) {
+
+	// first, test using a map
 	obj := make(map[string]interface{})
 	err := Set(obj, "X", "test34")
 	if err != nil {
-		t.Fatal("Got an error = " + err.Error())
+		t.Fatal("Got an error setting a root map prop, error = " + err.Error())
 	}
 	if obj["X"].(string) != "test34" {
 		t.Fatal("X != test34")
+	}
+	err = Set(nil, "a", "t")
+	if err == nil {
+		t.Fatal("Did not get an error when setting on a nil object")
+	}
+
+	// now, test using a struct
+	type SampleStruct struct {
+		A float64
+		B int
+		C string
+	}
+	s := SampleStruct{}
+
+	// test a non-pointer struct usage
+	err = Set(s, "A", 6.7)
+	if err == nil {
+		t.Fatal("Did not get an error when set got a non-pointer struct")
+	}
+
+	// test a simple prop set
+	err = Set(&s, "A", 6.7)
+	if err != nil {
+		t.Fatal("Got an error when getting struct root value")
 	}
 }
 

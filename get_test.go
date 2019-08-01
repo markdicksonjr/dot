@@ -5,6 +5,114 @@ import (
 	"testing"
 )
 
+func TestGet(t *testing.T) {
+	type SampleStructA struct {
+		Text string
+	}
+
+	type SampleStruct struct {
+		A SampleStructA
+		B int
+		C string
+	}
+
+	sample := SampleStruct{
+		A: SampleStructA{
+			Text: "sf",
+		},
+		B: 8,
+		C: "something",
+	}
+
+	// nested get, make "a" lowercase to demonstrate case-insensitivity
+	aText, err := Get(sample, "a.Text")
+	if err != nil {
+		t.Fail()
+	}
+	if aText == nil {
+		t.Fatal("dot-prop get failed")
+	}
+	if aText.(string) != "sf" {
+		t.Fatal("failed to dot-prop get string")
+	}
+
+	// root get of base type
+	bInt, err := Get(sample, "B")
+	if err != nil {
+		t.Fail()
+	}
+	if bInt == nil {
+		t.Fatal("dot-prop get root int failed")
+	}
+	if bInt.(int) != 8 {
+		t.Fatal("failed to dot-prop get root int")
+	}
+
+	// root get of string
+	cText, err := Get(sample, "C")
+	if err != nil {
+		t.Fail()
+	}
+	if cText == nil {
+		t.Fatal("dot-prop get failed")
+	}
+	if cText.(string) != "something" {
+		t.Fatal("failed to dot-prop get root string")
+	}
+
+	// root get of missing prop
+	_, err = Get(sample, "D")
+	if err == nil {
+		t.Fail()
+	}
+
+	// root get of missing sub-prop
+	_, err = Get(sample, "A.x")
+	if err == nil {
+		t.Fail()
+	}
+
+	// get on a nil object
+	rootNil, err := Get(nil, "e")
+	if err != nil {
+		t.Fail()
+	}
+	if rootNil != nil {
+		t.Fatal("got something that should from root have been nil")
+	}
+
+	// test fallback where first property is found, make A upper-case to demonstrate
+	// case insensitivity, along with the assertions above on "a"
+	firstProp, err := Get(sample, "A.Text", "B")
+	if err != nil {
+		t.Fail()
+	}
+	if firstProp == nil {
+		t.Fatal("dot-prop fallback get failed")
+	}
+	if firstProp.(string) != "sf" {
+		t.Fatal("failed to dot-prop get string with fallback")
+	}
+
+	// test fallback where first property is nil
+	secondProp, err := Get(sample, "A.bogus", "B", "C")
+	if err != nil {
+		t.Fail()
+	}
+	if secondProp == nil {
+		t.Fatal("dot-prop fallback get failed")
+	}
+	if secondProp.(int) != 8 {
+		t.Fatal("failed to dot-prop get string with fallback")
+	}
+
+	// test fallback where no property is available
+	_, err = Get(sample, "A.bogus", "bogus", "foo")
+	if err == nil {
+		t.Fail()
+	}
+}
+
 func TestGetInt64(t *testing.T) {
 	data := make(map[string]interface{})
 	a := make(map[string]interface{})
@@ -32,6 +140,11 @@ func TestGetInt64(t *testing.T) {
 	// test that incompatible coercion results in 0
 	if GetInt64(data, "a.e") != 0 {
 		t.Error("a.e was not 0")
+	}
+
+	// test that coercion on nil results in 0
+	if GetInt64(nil, "a.e") != 0 {
+		t.Error("GetInt64 on nil was not 0")
 	}
 }
 
@@ -64,6 +177,11 @@ func TestGetFloat64(t *testing.T) {
 	if GetFloat64(data, "a.e") != 0 { // will be some rounding error in float32
 		t.Error("a.e was not 0")
 	}
+
+	// test that coercion on nil results in 0
+	if GetFloat64(nil, "a.e") != 0 {
+		t.Error("GetFloat64 on nil was not 0")
+	}
 }
 
 func TestGetString(t *testing.T) {
@@ -72,6 +190,11 @@ func TestGetString(t *testing.T) {
 	res := GetString(data, "biz")
 	if res != "tammy" {
 		t.Error("result did not equal tammy")
+	}
+
+	res = GetString(nil, "p")
+	if res != "" {
+		t.Error("GetString on nil was not the empty string")
 	}
 }
 

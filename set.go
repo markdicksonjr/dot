@@ -8,6 +8,10 @@ import (
 )
 
 func Set(obj interface{}, prop string, value interface{}) error {
+	if obj == nil {
+		return errors.New("obj may not be nil for dot.Set")
+	}
+
 	// trim outer spaces from property
 	prop = strings.TrimSpace(prop)
 
@@ -34,7 +38,7 @@ func Set(obj interface{}, prop string, value interface{}) error {
 	for _, key = range arr {
 		effectiveObj, err = getProperty(effectiveObj, key)
 		if err != nil {
-			return err
+			break
 		}
 	}
 
