@@ -2,17 +2,11 @@
 
 Simple get/set with dot-notation for Go that can operate on maps, structs and interfaces.
 
+## Usage
+
+### Get
+
 ```go
-type SampleStructA struct {
-    Text string
-}
-
-type SampleStruct struct {
-    A SampleStructA
-    B int
-    C string
-}
-
 sample := SampleStruct{
     A: SampleStructA{
         Text: "foo",
@@ -29,18 +23,22 @@ if err != nil {
 
 // aText will be equal to "foo"
 
+sampleMap := make(map[string]interface{})
+sampleMap["D"] = "onmap"
+
+dText, err := Get(sampleMap, "D")
+if err != nil {
+    // handle the error
+}
+
+// dText will be "onmap"
+
 ```
 
 A fallback mechanism is also available, in which you define a list of properties and the first property with a value
 will be used for the Get function.
 
 ```go
-type SampleStruct struct {
-    A float64
-    B int
-    C string
-}
-
 sample := SampleStruct{
     A: 0.65,
     B: 8,
@@ -56,8 +54,26 @@ if err != nil {
 // fallbackText will be equal to 8
 ```
 
+### Set
+
+```go
+obj := make(map[string]interface{})
+err := Set(obj, "X", "test34")
+if err != nil {
+	// handle err
+}
+
+// obj.X will be "test34"
+```
+
+### Additional Getters (TODO: Enhance Details)
+
+- GetString
+- GetInt64
+- GetFloat64
+
 Notable details:
 
-- Properties are case-insensitive
+- Property access is case-insensitive
 - Failure to find a value at the provided property with Get will result in an error (you can still choose to ignore 
 the error and count on a nil value, if you wish) 
