@@ -54,7 +54,6 @@ func Set(obj interface{}, prop string, value interface{}) error {
 			return nil
 		}
 
-
 		if err := setProperty(obj, propPath[0], make(map[string]interface{})); err != nil {
 			return err
 		}

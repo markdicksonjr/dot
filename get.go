@@ -75,27 +75,16 @@ func GetString(obj interface{}, props ...string) string {
 		for _, key := range arr {
 			objCursor, err = getProperty(objCursor, key)
 			if err != nil {
-				continue
+				break
 			}
 		}
 
 		if objCursor != nil {
-			asString, ok := objCursor.(string)
-			if ok && asString != "" {
+			asString, ok := CoerceString(objCursor)
+			if ok {
 				return asString
-			} else {
-				asInt64, ok := CoerceInt64(objCursor)
-				if ok {
-					return strconv.Itoa(int(asInt64))
-				}
-
-				asFloat64, ok := CoerceFloat64(objCursor)
-				if ok {
-					return strconv.FormatFloat(asFloat64, 'f', -1, 64)
-				}
-
-				objCursor = nil
 			}
+			objCursor = nil
 		}
 	}
 	return ""
@@ -117,24 +106,21 @@ func GetInt64(obj interface{}, props ...string) int64 {
 		// Get the array access
 		arr := strings.Split(prop, ".")
 
+		objCursor := obj
+
 		var err error
 		for _, key := range arr {
-			obj, err = getProperty(obj, key)
+			objCursor, err = getProperty(objCursor, key)
 			if err != nil {
-				return 0
-			}
-			if obj == nil {
-				continue
+				break
 			}
 		}
 
-		if obj != nil {
-			as64, ok := CoerceInt64(obj)
+		if objCursor != nil {
+			as64, ok := CoerceInt64(objCursor)
 			if ok {
 				return as64
 			}
-
-			obj = nil
 		}
 	}
 	return 0
@@ -175,24 +161,21 @@ func GetFloat64(obj interface{}, props ...string) float64 {
 		// Get the array access
 		arr := strings.Split(prop, ".")
 
+		objCursor := obj
+
 		var err error
 		for _, key := range arr {
-			obj, err = getProperty(obj, key)
+			objCursor, err = getProperty(objCursor, key)
 			if err != nil {
-				return 0
-			}
-			if obj == nil {
-				continue
+				break
 			}
 		}
 
-		if obj != nil {
-			as64, ok := CoerceFloat64(obj)
+		if objCursor != nil {
+			as64, ok := CoerceFloat64(objCursor)
 			if ok {
 				return as64
 			}
-
-			obj = nil
 		}
 	}
 	return 0
@@ -215,6 +198,25 @@ func CoerceFloat64(obj interface{}) (float64, bool) {
 	}
 
 	return 0, false
+}
+
+func CoerceString(objCursor interface{}) (string, bool) {
+	asString, ok := objCursor.(string)
+	if ok && asString != "" {
+		return asString, true
+	} else {
+		asInt64, ok := CoerceInt64(objCursor)
+		if ok {
+			return strconv.Itoa(int(asInt64)), true
+		}
+
+		asFloat64, ok := CoerceFloat64(objCursor)
+		if ok {
+			return strconv.FormatFloat(asFloat64, 'f', -1, 64), true
+		}
+	}
+
+	return "", false
 }
 
 // Loop through this to get properties via dot notation

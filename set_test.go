@@ -37,8 +37,13 @@ func TestTopLevelSet(t *testing.T) {
 	if err != nil {
 		t.Fatal("Got an error when getting struct root value")
 	}
-}
 
+	// test a simple prop set
+	err = Set(&s, ".", 4)
+	if err == nil {
+		t.Fatal("Did not get error when one should have been returned")
+	}
+}
 
 func TestSimpleTwoLevelSet(t *testing.T) {
 	obj := make(map[string]interface{})

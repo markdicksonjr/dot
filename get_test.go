@@ -11,17 +11,19 @@ func TestGet(t *testing.T) {
 	}
 
 	type SampleStruct struct {
-		A SampleStructA
-		B int
-		C string
+		A     SampleStructA
+		B     int
+		C     string
+		Slice []int
 	}
 
 	sample := SampleStruct{
 		A: SampleStructA{
 			Text: "sf",
 		},
-		B: 8,
-		C: "something",
+		B:     8,
+		C:     "something",
+		Slice: []int{5, 6},
 	}
 
 	// nested get, make "a" lowercase to demonstrate case-insensitivity
@@ -111,6 +113,12 @@ func TestGet(t *testing.T) {
 	if err == nil {
 		t.Fail()
 	}
+
+	// test getting a slice from the object
+	_, err = Get(sample, "Slice")
+	if err != nil {
+		t.Fail()
+	}
 }
 
 func TestGetInt64(t *testing.T) {
@@ -120,6 +128,7 @@ func TestGetInt64(t *testing.T) {
 	a["c"] = 6.5
 	a["d"] = int32(7)
 	a["e"] = "should be 0"
+	a["f"] = int64(9)
 	data["a"] = a
 
 	// test coercion of int
@@ -146,8 +155,17 @@ func TestGetInt64(t *testing.T) {
 	if GetInt64(nil, "a.e") != 0 {
 		t.Error("GetInt64 on nil was not 0")
 	}
-}
 
+	// test that coercion on explicit int64
+	if GetInt64(data, "a.f") != 9 {
+		t.Error("GetInt64 on explicity int64 not correct")
+	}
+
+	// test fallback
+	if GetInt64(data, "x", "a.b") != 5 {
+		t.Error("fallback did not fall back to the correct value")
+	}
+}
 
 func TestGetFloat64(t *testing.T) {
 	data := make(map[string]interface{})
@@ -169,7 +187,7 @@ func TestGetFloat64(t *testing.T) {
 	}
 
 	// test coercion of float32
-	if math.Floor(GetFloat64(data, "a.d") * 10) / 10 != 7.8 { // will be some rounding error in float32
+	if math.Floor(GetFloat64(data, "a.d")*10)/10 != 7.8 { // will be some rounding error in float32
 		t.Error("a.d was not 7.8")
 	}
 
@@ -181,6 +199,11 @@ func TestGetFloat64(t *testing.T) {
 	// test that coercion on nil results in 0
 	if GetFloat64(nil, "a.e") != 0 {
 		t.Error("GetFloat64 on nil was not 0")
+	}
+
+	// test fallback
+	if GetFloat64(data, "x", "a.c") != 6.5 {
+		t.Error("fallback did not fall back to the correct value")
 	}
 }
 
@@ -196,8 +219,13 @@ func TestGetString(t *testing.T) {
 	if res != "" {
 		t.Error("GetString on nil was not the empty string")
 	}
-}
 
+	data["obj"] = make(map[string]interface{})
+	res = GetString(data, "obj")
+	if res != "" {
+		t.Error("result was non-empty when it should not be")
+	}
+}
 
 func TestGetStringFromFloatCoercion(t *testing.T) {
 	data := make(map[string]interface{})
