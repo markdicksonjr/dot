@@ -56,9 +56,32 @@ func KeysRecursive(obj interface{}, parentPath ...string) []string {
 	}
 
 	var allKeys []string
-	keys := Keys(obj, strParentPath)
+	keys := Keys(obj)
 	for _, k := range keys {
-		allKeys = append(allKeys, k)
+		adjustedChildPath := k
+		if len(strParentPath) > 0 {
+			adjustedChildPath = strParentPath + "." + k
+		}
+		allKeys = append(allKeys, adjustedChildPath)
+
+		v, _ := Get(obj, k)
+		if v != nil {
+			allKeys = append(allKeys, KeysRecursive(v, adjustedChildPath)...)
+		}
+	}
+
+	return allKeys
+}
+
+func KeysRecursiveLeaves(obj interface{}, parentPath ...string) []string {
+	strParentPath := ""
+	if len(parentPath) > 0 {
+		strParentPath = parentPath[0]
+	}
+
+	var allKeys []string
+	keys := Keys(obj)
+	for _, k := range keys {
 		adjustedChildPath := k
 		if len(strParentPath) > 0 {
 			adjustedChildPath = strParentPath + "." + k
@@ -66,7 +89,12 @@ func KeysRecursive(obj interface{}, parentPath ...string) []string {
 
 		v, _ := Get(obj, k)
 		if v != nil {
-			allKeys = append(allKeys, KeysRecursive(v, adjustedChildPath)...)
+			leaves := KeysRecursiveLeaves(v, adjustedChildPath)
+			if len(leaves) == 0 {
+				allKeys = append(allKeys, adjustedChildPath)
+			} else {
+				allKeys = append(allKeys, leaves...)
+			}
 		}
 	}
 

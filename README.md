@@ -86,6 +86,10 @@ keysFromStruct := dot.Keys(testStruct)
 
 Just like Keys, only recursive
 
+### KeysRecursiveLeaves
+
+Just like KeysRecursive, except it returns only items with no "children"
+
 ### Additional Getters (TODO: Enhance Details)
 
 - GetString
