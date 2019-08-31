@@ -46,7 +46,7 @@ sample := SampleStruct{
 }
 
 // nested get, make "a" lowercase to demonstrate case-insensitivity
-fallbackText, err := Get(sample, "x", "y", "b")
+fallbackText, err := dot.Get(sample, "x", "y", "b")
 if err != nil {
     // handle the error
 }
@@ -58,12 +58,28 @@ if err != nil {
 
 ```go
 obj := make(map[string]interface{})
-err := Set(obj, "X", "test34")
+err := dot.Set(obj, "X", "test34")
 if err != nil {
 	// handle err
 }
 
 // obj.X will be "test34"
+```
+
+### Keys
+
+Gets the list of keys for an arbitrary structure (non-recursively).  In the result below, the result will be ["A", "B"], 
+though it's best to not assume the elements are ordered:
+
+```go
+testStruct := TestStruct{
+    A: false,
+    B: map[string]interface{}{
+        "A": 1,
+    }
+}
+
+keysFromStruct := dot.Keys(testStruct)
 ```
 
 ### Additional Getters (TODO: Enhance Details)
