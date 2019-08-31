@@ -3,20 +3,20 @@ package dot
 import "testing"
 
 func TestKeys(t *testing.T) {
-	mapTest := map[string]interface{} {
+	mapTest := map[string]interface{}{
 		"one": 1,
 		"two": 3,
-		"3": 4,
-		"a": "h",
-		"d": map[string]interface{} {
+		"3":   4,
+		"a":   "h",
+		"d": map[string]interface{}{
 			"one": 1,
 			"two": 3,
-			"3": 4,
-			"a": "h",
+			"3":   4,
+			"a":   "h",
 		},
 	}
 
-	// try without a parent path
+	// try root-level keys without a parent path
 	keysFromMap := Keys(mapTest)
 
 	if len(keysFromMap) != 5 {
@@ -27,14 +27,30 @@ func TestKeys(t *testing.T) {
 		t.Fail()
 	}
 
-	// now, try again with a parent path
+	// now, try root-level keys again with a parent path
 	keysFromMap = Keys(mapTest, "root.data")
 
 	if len(keysFromMap) != 5 {
 		t.Fail()
 	}
 
-	if !contains(keysFromMap, "root.data.one") || !contains(keysFromMap, "root.data.two") || !contains(keysFromMap, "root.data.3") || !contains(keysFromMap, "root.data.a") || !contains(keysFromMap, "root.data.d") {
+	if !contains(keysFromMap, "root.data.one") || !contains(keysFromMap, "root.data.two") ||
+		!contains(keysFromMap, "root.data.3") || !contains(keysFromMap, "root.data.a") ||
+		!contains(keysFromMap, "root.data.d") {
+
+		t.Fail()
+	}
+
+	// try recursive keys without a parent path
+	deepKeysFromMap := KeysRecursive(mapTest)
+	if len(deepKeysFromMap) != 9 {
+		t.Fail()
+	}
+
+	if !contains(deepKeysFromMap, "one") || !contains(deepKeysFromMap, "two") || !contains(deepKeysFromMap, "3") ||
+		!contains(deepKeysFromMap, "a") || !contains(deepKeysFromMap, "d") || !contains(deepKeysFromMap, "d.one") ||
+		!contains(deepKeysFromMap, "d.two") || !contains(deepKeysFromMap, "d.3") || !contains(deepKeysFromMap, "d.a") {
+
 		t.Fail()
 	}
 

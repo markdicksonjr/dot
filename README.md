@@ -82,6 +82,10 @@ testStruct := TestStruct{
 keysFromStruct := dot.Keys(testStruct)
 ```
 
+### KeysRecursive
+
+Just like Keys, only recursive
+
 ### Additional Getters (TODO: Enhance Details)
 
 - GetString

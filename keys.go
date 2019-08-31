@@ -48,3 +48,27 @@ func Keys(obj interface{}, parentPath ...string) []string {
 		return keys
 	}
 }
+
+func KeysRecursive(obj interface{}, parentPath ...string) []string {
+	strParentPath := ""
+	if len(parentPath) > 0 {
+		strParentPath = parentPath[0]
+	}
+
+	var allKeys []string
+	keys := Keys(obj, strParentPath)
+	for _, k := range keys {
+		allKeys = append(allKeys, k)
+		adjustedChildPath := k
+		if len(strParentPath) > 0 {
+			adjustedChildPath = strParentPath + "." + k
+		}
+
+		v, _ := Get(obj, k)
+		if v != nil {
+			allKeys = append(allKeys, KeysRecursive(v, adjustedChildPath)...)
+		}
+	}
+
+	return allKeys
+}
