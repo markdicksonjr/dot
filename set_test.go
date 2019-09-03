@@ -19,10 +19,15 @@ func TestTopLevelSet(t *testing.T) {
 	}
 
 	// now, test using a struct
+	type InnerStruct struct {
+		X string
+		Y *string
+	}
 	type SampleStruct struct {
 		A float64
 		B int
 		C string
+		D InnerStruct
 	}
 	s := SampleStruct{}
 
@@ -42,6 +47,26 @@ func TestTopLevelSet(t *testing.T) {
 	err = Set(&s, ".", 4)
 	if err == nil {
 		t.Fatal("Did not get error when one should have been returned")
+	}
+
+	err = Set(s, "D.X", "t")
+	if err == nil {
+		t.Fatal("Did not get an error when setting non-pointer sub-struct")
+	}
+
+	f, _ := Get(s, "D.X")
+	if f != "t" {
+		t.Fatal("Did not get back what was set on nested struct")
+	}
+
+	err = Set(s, "D.Y", "q")
+	if err == nil {
+		t.Fatal("Did not get an error when setting pointer sub-struct")
+	}
+
+	g, _ := Get(s, "D.Y")
+	if g != "q" {
+		t.Fatal("Did not get back what was set on nested pointer struct")
 	}
 }
 
