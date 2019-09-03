@@ -36,7 +36,7 @@ func Set(obj interface{}, prop string, value interface{}) error {
 	var effectiveObj = obj
 	last, arr := arr[len(arr)-1], arr[:len(arr)-1]
 	for _, key = range arr {
-		effectiveObj, err = getProperty(effectiveObj, key, false)
+		effectiveObj, err = getProperty(effectiveObj, key, true)
 		if err != nil {
 			break
 		}
