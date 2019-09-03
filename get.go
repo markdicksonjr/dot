@@ -220,7 +220,7 @@ func CoerceString(objCursor interface{}) (string, bool) {
 }
 
 // Loop through this to get properties via dot notation
-func getProperty(obj interface{}, prop string, requireRef bool) (interface{}, error) {
+func getProperty(obj interface{}, prop string, requireRefForStruct bool) (interface{}, error) {
 	if obj == nil {
 		return nil, nil
 	}
@@ -250,10 +250,19 @@ func getProperty(obj interface{}, prop string, requireRef bool) (interface{}, er
 
 	prop = strings.Title(prop)
 
+	res, err := reflections.GetField(obj, prop)
+	if err != nil {
+		return nil, err
+	}
+	if res == nil {
+		return nil, nil
+	}
+
 	// if we require a ref, but don't have a pointer at this point, return the ref
-	if requireRef && kind != reflect.Ptr {
+	kind = reflect.TypeOf(res).Kind()
+	if requireRefForStruct && kind == reflect.Struct {
 		return reflections.GetField(&obj, prop)
 	}
 
-	return reflections.GetField(obj, prop)
+	return res, nil
 }
