@@ -20,25 +20,20 @@ func TestExtend(t *testing.T) {
 		},
 	}
 
-	z, err := Extend(x, y)
+	err := Extend(x, y)
 	if err != nil {
 		t.Fail()
 	}
 
-	zMap, ok := z.(map[string]interface{})
-	if !ok {
+	if GetString(x, "A") != "1" {
 		t.Fail()
 	}
 
-	if GetString(zMap, "A") != "1" {
+	if GetString(x, "B") != "8" {
 		t.Fail()
 	}
 
-	if GetString(zMap, "B") != "8" {
-		t.Fail()
-	}
-
-	cMap, ok := zMap["C"].(map[string]interface{})
+	cMap, _ := Get(x, "C")
 	if GetString(cMap, "Z") != "3" {
 		t.Fail()
 	}

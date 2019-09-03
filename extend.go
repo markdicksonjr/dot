@@ -1,25 +1,13 @@
 package dot
 
-import "encoding/json"
-
 // Extend copies non-nil, non-default values from right to left
-func Extend(to interface{}, from interface{}) (interface{}, error) {
-
-	// copy "to" into "n"
-	var n interface{}
-	toCopyS, err := json.Marshal(to)
-	if err != nil {
-		return n, nil
-	}
-	if err := json.Unmarshal(toCopyS, &n); err != nil {
-		return n, nil
-	}
+func Extend(to interface{}, from interface{}) error {
 
 	keys := KeysRecursiveLeaves(from)
 	for _, k := range keys {
 		i, err := Get(from, k)
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		// if a non-nil, non-default value is encountered, allow it to overwrite
@@ -48,9 +36,9 @@ func Extend(to interface{}, from interface{}) (interface{}, error) {
 			continue
 		}
 
-		if err := Set(n, k, i); err != nil {
-			return nil, err
+		if err := Set(to, k, i); err != nil {
+			return err
 		}
 	}
-	return n, nil
+	return nil
 }
