@@ -1,6 +1,7 @@
 package dot
 
 import (
+	"encoding/json"
 	"errors"
 	"github.com/oleiade/reflections"
 	"reflect"
@@ -15,10 +16,6 @@ func Set(obj interface{}, prop string, value interface{}) error {
 	// trim outer spaces from property
 	prop = strings.TrimSpace(prop)
 
-	//if len(prop) == 0 {
-	//	return errors.New("zero-length properties are not allowed")
-	//}
-
 	if prop[0] == '.' {
 		return errors.New("dot-set property may not start with '.'")
 	}
@@ -30,13 +27,32 @@ func Set(obj interface{}, prop string, value interface{}) error {
 	// get the array access
 	arr := strings.Split(prop, ".")
 
-	// get each level of property, all the way down to the leaf
 	var err error
 	var key string
+	var fullMap map[string]interface{}
 	var effectiveObj = obj
+
+	// adjust a struct to be a map TODO: improve for performance concerns (and code cleanliness)
+	effReflect := reflect.TypeOf(effectiveObj)
+	if effReflect.Kind() == reflect.Ptr && effReflect.Elem().Kind() == reflect.Struct {
+		s, err := json.Marshal(effectiveObj)
+		if err != nil {
+			return err
+		}
+
+		var asMap map[string]interface{}
+		if err := json.Unmarshal(s, &asMap); err != nil {
+			return err
+		}
+
+		fullMap = asMap
+		effectiveObj = asMap
+	}
+
+	// get each level of property, all the way down to the leaf
 	last, arr := arr[len(arr)-1], arr[:len(arr)-1]
 	for _, key = range arr {
-		effectiveObj, err = getProperty(effectiveObj, key, true)
+		effectiveObj, err = getProperty(effectiveObj, key)
 		if err != nil {
 			break
 		}
@@ -58,12 +74,30 @@ func Set(obj interface{}, prop string, value interface{}) error {
 			return err
 		}
 
-		innerProp, err := getProperty(obj, propPath[0], true)
+		innerProp, err := getProperty(obj, propPath[0])
 		if err != nil {
 			return err
 		}
 
 		return Set(innerProp, strings.Join(propPath[1:], "."), value)
+	}
+
+	if fullMap != nil {
+		err := setProperty(effectiveObj, last, value)
+		if err != nil {
+			return err
+		}
+
+		b, err := json.Marshal(fullMap)
+		if err != nil {
+			return err
+		}
+
+		if err := json.Unmarshal(b, &obj); err != nil {
+			return err
+		}
+
+		return nil
 	}
 
 	return setProperty(effectiveObj, last, value)

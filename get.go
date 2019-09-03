@@ -32,7 +32,7 @@ func Get(obj interface{}, props ...string) (interface{}, error) {
 		// continue to follow the dot-path, using the cursor
 		var err error
 		for _, key := range arr {
-			objCursor, err = getProperty(objCursor, key, false)
+			objCursor, err = getProperty(objCursor, key)
 
 			// if we can't follow the path
 			if err != nil {
@@ -73,7 +73,7 @@ func GetString(obj interface{}, props ...string) string {
 
 		var err error
 		for _, key := range arr {
-			objCursor, err = getProperty(objCursor, key, false)
+			objCursor, err = getProperty(objCursor, key)
 			if err != nil {
 				break
 			}
@@ -110,7 +110,7 @@ func GetInt64(obj interface{}, props ...string) int64 {
 
 		var err error
 		for _, key := range arr {
-			objCursor, err = getProperty(objCursor, key, false)
+			objCursor, err = getProperty(objCursor, key)
 			if err != nil {
 				break
 			}
@@ -165,7 +165,7 @@ func GetFloat64(obj interface{}, props ...string) float64 {
 
 		var err error
 		for _, key := range arr {
-			objCursor, err = getProperty(objCursor, key, false)
+			objCursor, err = getProperty(objCursor, key)
 			if err != nil {
 				break
 			}
@@ -220,7 +220,7 @@ func CoerceString(objCursor interface{}) (string, bool) {
 }
 
 // Loop through this to get properties via dot notation
-func getProperty(obj interface{}, prop string, requireRefForStruct bool) (interface{}, error) {
+func getProperty(obj interface{}, prop string) (interface{}, error) {
 	if obj == nil {
 		return nil, nil
 	}
@@ -250,19 +250,5 @@ func getProperty(obj interface{}, prop string, requireRefForStruct bool) (interf
 
 	prop = strings.Title(prop)
 
-	res, err := reflections.GetField(obj, prop)
-	if err != nil {
-		return nil, err
-	}
-	if res == nil {
-		return nil, nil
-	}
-
-	// if we require a ref, but don't have a pointer at this point, return the ref
-	kind = reflect.TypeOf(res).Kind()
-	if requireRefForStruct && kind == reflect.Struct {
-		return reflections.GetField(&obj, prop)
-	}
-
-	return res, nil
+	return reflections.GetField(obj, prop)
 }
