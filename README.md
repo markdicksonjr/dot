@@ -101,3 +101,10 @@ Notable details:
 - Property access is case-insensitive
 - Failure to find a value at the provided property with Get will result in an error (you can still choose to ignore 
 the error and count on a nil value, if you wish) 
+
+## Common Errors
+
+`object must be a pointer to a struct`
+
+This error means that you're passing a struct to dot.Set, when you should be passing a pointer to the struct.  Add a &
+before the struct you're passing.
