@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestGet(t *testing.T) {
+func TestGet_Struct(t *testing.T) {
 	type SampleStructA struct {
 		Text string
 	}
@@ -118,6 +118,25 @@ func TestGet(t *testing.T) {
 	_, err = Get(sample, "Slice")
 	if err != nil {
 		t.Fail()
+	}
+}
+
+func BenchmarkGet_Map(b *testing.B) {
+	data := map[string]interface{} {
+		"A": map[string]interface{} {
+			"Z": 1,
+			"AA": 0,
+		},
+	}
+
+	aGet, _ := Get(data, "A")
+	if aGet == nil {
+		b.Fatal("got nil 'A'")
+	}
+
+	azGet, _ := Get(data, "A.Z")
+	if azGetInt, _ := CoerceInt64(azGet); azGetInt != 1 {
+		b.Fatal("A.Z was not 1")
 	}
 }
 
