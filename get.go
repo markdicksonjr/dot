@@ -225,30 +225,35 @@ func getProperty(obj interface{}, prop string) (interface{}, error) {
 		return nil, nil
 	}
 
-	if reflect.TypeOf(obj).Kind() == reflect.Map {
+	// try to get the value without further use of reflections (only works if obj is castable to map[string]interface{})
+	// while the reflections version works for map[string](ANY)
+	asMap, ok := obj.(map[string]interface{})
+	if ok {
+		return asMap[prop], nil
+	}
 
+	kind := reflect.TypeOf(obj).Kind()
+
+	if kind == reflect.Slice {
+		return obj, nil // TODO: this kind of seems funny - probably should be nil, nil
+	} else if kind == reflect.Map {
+
+		// the inbound object is a map, but not map[string]interface{}, use reflections to get the value
 		val := reflect.ValueOf(obj)
-
 		valueOf := val.MapIndex(reflect.ValueOf(prop))
 
+		// check for nil (zero of value type)
 		if valueOf == reflect.Zero(reflect.ValueOf(prop).Type()) {
 			return nil, nil
 		}
 
+		// index into the map to get the property's value
 		idx := val.MapIndex(reflect.ValueOf(prop))
-
 		if !idx.IsValid() {
 			return nil, errors.New("property " + prop + " not found")
 		}
 		return idx.Interface(), nil
 	}
 
-	kind := reflect.TypeOf(obj).Kind()
-	if kind == reflect.Slice {
-		return obj, nil
-	}
-
-	prop = strings.Title(prop)
-
-	return reflections.GetField(obj, prop)
+	return reflections.GetField(obj, strings.Title(prop))
 }
