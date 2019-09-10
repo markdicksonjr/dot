@@ -218,14 +218,14 @@ func CoerceString(objCursor interface{}) (string, bool) {
 	if ok && asString != "" {
 		return asString, true
 	} else {
-		asInt64, ok := CoerceInt64(objCursor)
-		if ok {
-			return strconv.Itoa(int(asInt64)), true
-		}
-
 		asFloat64, ok := CoerceFloat64(objCursor)
 		if ok {
 			return strconv.FormatFloat(asFloat64, 'f', -1, 64), true
+		}
+
+		asInt64, ok := CoerceInt64(objCursor)
+		if ok {
+			return strconv.Itoa(int(asInt64)), true
 		}
 	}
 

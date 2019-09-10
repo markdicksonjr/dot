@@ -148,6 +148,7 @@ func TestGetInt64(t *testing.T) {
 	a["d"] = int32(7)
 	a["e"] = "should be 0"
 	a["f"] = int64(9)
+	a["g"] = false
 	data["a"] = a
 
 	// test coercion of int
@@ -155,9 +156,9 @@ func TestGetInt64(t *testing.T) {
 		t.Error("a.b was not 5")
 	}
 
-	// test simple get of target type
-	if GetInt64(data, "a.c") != 0 {
-		t.Error("a.c was not 0")
+	// test simple get of float flooring
+	if GetInt64(data, "a.c") != 6 {
+		t.Error("a.c was not 6")
 	}
 
 	// test coercion of float32
@@ -173,6 +174,11 @@ func TestGetInt64(t *testing.T) {
 	// test that coercion on nil results in 0
 	if GetInt64(nil, "a.e") != 0 {
 		t.Error("GetInt64 on nil was not 0")
+	}
+
+	// test simple get of target type
+	if GetInt64(data, "a.g") != 0 {
+		t.Error("a.c was not 0")
 	}
 
 	// test that coercion on explicit int64
