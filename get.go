@@ -19,25 +19,21 @@ func Get(obj interface{}, props ...string) (interface{}, error) {
 	// allow fallback to other properties if props earlier in the list
 	// have errors (probably because they don't exist)
 	var lastError error
+	var err error
 
 	// loop through each property option
 	for _, prop := range props {
-
-		// get the array for sub-properties to access
-		arr := strings.Split(prop, ".")
 
 		// initialize a cursor for the current descendent of obj
 		objCursor := obj
 
 		// continue to follow the dot-path, using the cursor
-		var err error
-		for _, key := range arr {
-			objCursor, err = getProperty(objCursor, key)
+		for _, key := range strings.Split(prop, ".") {
 
-			// if we can't follow the path
-			if err != nil {
+			// get the value one level down from the objCursor
+			if objCursor, err = getProperty(objCursor, key); err != nil {
 
-				// mark it as the most recent error and move to the next property option
+				// if we can't follow the path, mark it as the most recent error and move to the next property option
 				lastError = err
 				break
 			}
@@ -64,15 +60,12 @@ func GetString(obj interface{}, props ...string) string {
 		return ""
 	}
 
+	var err error
+
 	for _, prop := range props {
-
-		// get the array access
-		arr := strings.Split(prop, ".")
-
 		objCursor := obj
 
-		var err error
-		for _, key := range arr {
+		for _, key := range strings.Split(prop, ".") {
 			objCursor, err = getProperty(objCursor, key)
 			if err != nil {
 				break
