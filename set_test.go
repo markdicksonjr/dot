@@ -70,6 +70,21 @@ func TestTopLevelSet(t *testing.T) {
 	//}
 }
 
+func TestSet_BlankKey(t *testing.T) {
+
+	obj := make(map[string]interface{})
+	err := Set(obj, "", "foo")
+	if err != nil {
+		t.Fatal("Got an error = " + err.Error())
+	}
+	if obj[""] == nil {
+		t.Fatal("could not get blank property from obj")
+	}
+	if obj[""] != "foo" {
+		t.Fatal("failed to retrieve blank property after set")
+	}
+}
+
 func TestSimpleTwoLevelSet(t *testing.T) {
 	obj := make(map[string]interface{})
 	err := Set(obj, "F.A", "hoo")

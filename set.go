@@ -16,12 +16,15 @@ func Set(obj interface{}, prop string, value interface{}) error {
 	// trim outer spaces from property
 	prop = strings.TrimSpace(prop)
 
-	if prop[0] == '.' {
-		return errors.New("dot-set property may not start with '.'")
-	}
+	// validate obvious pathing errors
+	if len(prop) > 0 {
+		if prop[0] == '.' {
+			return errors.New("dot-set property may not start with '.'")
+		}
 
-	if prop[len(prop) - 1] == '.' {
-		return errors.New("dot-set property may not end in '.'")
+		if prop[len(prop) - 1] == '.' {
+			return errors.New("dot-set property may not end in '.'")
+		}
 	}
 
 	// get the array access
