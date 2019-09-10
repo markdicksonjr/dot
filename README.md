@@ -6,6 +6,8 @@ Simple get/set with dot-notation for Go that can operate on maps, structs and in
 
 ### Get
 
+Get will retrieve the value at the specified dot path.  It will return an error if the property is not found.
+
 ```go
 sample := SampleStruct{
     A: SampleStructA{
@@ -55,6 +57,9 @@ if err != nil {
 ```
 
 ### Set
+
+Sets the value at the dot-property provided.  Will create map[string]interface{} for any missing levels along the way.
+If that poses an issue (struct setting, perhaps), it's recommended to allocate structures accordingly.
 
 ```go
 obj := make(map[string]interface{})
