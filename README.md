@@ -1,5 +1,9 @@
 # Dot
 
+[![Build Status](https://travis-ci.org/markdicksonjr/dot.svg?branch=master)](https://travis-ci.org/markdicksonjr/dot)
+[![Coverage Status](https://coveralls.io/repos/github/markdicksonjr/dot/badge.svg?branch=master)](https://coveralls.io/github/markdicksonjr/dot?branch=master)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 Simple get/set with dot-notation for Go that can operate on maps, structs and interfaces.
 
 ## Usage
