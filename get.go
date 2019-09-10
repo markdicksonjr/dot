@@ -135,6 +135,16 @@ func CoerceInt64(obj interface{}) (int64, bool) {
 		return int64(asInt), true
 	}
 
+	fromFloat64, ok := obj.(float64)
+	if ok {
+		return int64(fromFloat64), true
+	}
+
+	fromFloat32, ok := obj.(float32)
+	if ok {
+		return int64(fromFloat32), true
+	}
+
 	return 0, false
 }
 
@@ -188,6 +198,16 @@ func CoerceFloat64(obj interface{}) (float64, bool) {
 	asInt, ok := obj.(int)
 	if ok {
 		return float64(asInt), true
+	}
+
+	asInt64, ok := obj.(int64)
+	if ok {
+		return float64(asInt64), true
+	}
+
+	asInt32, ok := obj.(int32)
+	if ok {
+		return float64(asInt32), true
 	}
 
 	return 0, false
