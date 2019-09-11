@@ -25,30 +25,29 @@ func Keys(obj interface{}, parentPath ...string) []string {
 			keys = append(keys, adjustedKey)
 		}
 		return keys
-	} else {
-		// TODO: find faster way
-
-		// json to str, str to map
-		strJson, err := json.Marshal(obj)
-		if err != nil {
-			return []string{}
-		}
-
-		var asMap map[string]interface{}
-		if err := json.Unmarshal(strJson, &asMap); err != nil {
-			return []string{}
-		}
-
-		var keys []string
-		for k := range asMap {
-			adjustedKey := k
-			if len(strParentPath) > 0 {
-				adjustedKey = strParentPath + "." + adjustedKey
-			}
-			keys = append(keys, adjustedKey)
-		}
-		return keys
 	}
+
+	// TODO: find faster way
+
+	// json to str, str to map
+	strJson, err := json.Marshal(obj)
+	if err != nil {
+		return []string{}
+	}
+
+	if err := json.Unmarshal(strJson, &asMap); err != nil {
+		return []string{}
+	}
+
+	var keys []string
+	for k := range asMap {
+		adjustedKey := k
+		if len(strParentPath) > 0 {
+			adjustedKey = strParentPath + "." + adjustedKey
+		}
+		keys = append(keys, adjustedKey)
+	}
+	return keys
 }
 
 // KeysRecursive is just like Keys, only recursive.  The ordering of elements in the resulting slice is not to be
@@ -77,7 +76,7 @@ func KeysRecursive(obj interface{}, parentPath ...string) []string {
 	return allKeys
 }
 
-// KeysRecursive is like KeysRecursive, except it returns only items with no "children"
+// KeysRecursiveLeaves is like KeysRecursive, except it returns only items with no "children"
 func KeysRecursiveLeaves(obj interface{}, parentPath ...string) []string {
 	strParentPath := ""
 	if len(parentPath) > 0 {
