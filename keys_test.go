@@ -173,8 +173,8 @@ func TestKeysRecursiveLeaves(t *testing.T) {
 		"d": map[string]interface{}{
 			"6": 1,
 			"7": 3,
-			"8":   4,
-			"z":   "h",
+			"8": 4,
+			"z": "h",
 		},
 	}
 	// try recursive keys without a parent path

@@ -122,9 +122,9 @@ func TestGet_Struct(t *testing.T) {
 }
 
 func BenchmarkGet_Map(b *testing.B) {
-	data := map[string]interface{} {
-		"A": map[string]interface{} {
-			"Z": 1,
+	data := map[string]interface{}{
+		"A": map[string]interface{}{
+			"Z":  1,
 			"AA": 0,
 		},
 	}

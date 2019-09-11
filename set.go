@@ -25,7 +25,7 @@ func Set(obj interface{}, prop string, value interface{}) error {
 			return errors.New("dot-set property may not start with '.'")
 		}
 
-		if prop[len(prop) - 1] == '.' {
+		if prop[len(prop)-1] == '.' {
 			return errors.New("dot-set property may not end in '.'")
 		}
 	}

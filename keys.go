@@ -2,6 +2,8 @@ package dot
 
 import "encoding/json"
 
+// Keys will get the list of keys for an arbitrary structure (non-recursively).  In the result below, the result will
+// be ["A", "B"], though it's best to not assume the elements are ordered.
 func Keys(obj interface{}, parentPath ...string) []string {
 	if obj == nil {
 		return []string{}
@@ -49,6 +51,8 @@ func Keys(obj interface{}, parentPath ...string) []string {
 	}
 }
 
+// KeysRecursive is just like Keys, only recursive.  The ordering of elements in the resulting slice is not to be
+// assumed at any time
 func KeysRecursive(obj interface{}, parentPath ...string) []string {
 	strParentPath := ""
 	if len(parentPath) > 0 {
@@ -73,6 +77,7 @@ func KeysRecursive(obj interface{}, parentPath ...string) []string {
 	return allKeys
 }
 
+// KeysRecursive is like KeysRecursive, except it returns only items with no "children"
 func KeysRecursiveLeaves(obj interface{}, parentPath ...string) []string {
 	strParentPath := ""
 	if len(parentPath) > 0 {

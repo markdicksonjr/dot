@@ -3,9 +3,9 @@ package dot
 import "testing"
 
 func TestExtend(t *testing.T) {
-	x := map[string]interface{} {
+	x := map[string]interface{}{
 		"A": 1,
-		"C": map[string]interface{} {
+		"C": map[string]interface{}{
 			"Z": 3,
 		},
 		"F": false,
@@ -18,12 +18,12 @@ func TestExtend(t *testing.T) {
 		"M": 18.9,
 	}
 
-	y := map[string]interface{} {
+	y := map[string]interface{}{
 		"B": 8,
-		"C": map[string]interface{} {
+		"C": map[string]interface{}{
 			"X": 6,
 		},
-		"D": map[string]interface{} {
+		"D": map[string]interface{}{
 			"Y": 2,
 		},
 		"F": true,
