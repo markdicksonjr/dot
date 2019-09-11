@@ -77,7 +77,6 @@ func GetString(obj interface{}, props ...string) string {
 			if ok {
 				return asString
 			}
-			objCursor = nil
 		}
 	}
 	return ""
@@ -119,6 +118,8 @@ func GetInt64(obj interface{}, props ...string) int64 {
 	return 0
 }
 
+// CoerceInt64 will make a best-effort to convert the provided argument to an int64.  It supports int64, int32, int,
+// float64, float32 as acceptable inputs, but expect this list to expand further with new releases
 func CoerceInt64(obj interface{}) (int64, bool) {
 	as64, ok := obj.(int64)
 	if ok {
@@ -184,6 +185,8 @@ func GetFloat64(obj interface{}, props ...string) float64 {
 	return 0
 }
 
+// CoerceFloat64 will make a best-effort to convert the provided argument to an float64.  It supports int64, int32, int,
+// float64, float32 as acceptable inputs, but expect this list to expand further with new releases
 func CoerceFloat64(obj interface{}) (float64, bool) {
 	as64, ok := obj.(float64)
 	if ok {
@@ -213,6 +216,8 @@ func CoerceFloat64(obj interface{}) (float64, bool) {
 	return 0, false
 }
 
+// CoerceString will make a best-effort to convert the provided argument to a string.  It supports string as well as
+// anything supported by CoerceFloat64 and CoerceInt64.  Expect the list of supported argument types to expand.
 func CoerceString(objCursor interface{}) (string, bool) {
 	asString, ok := objCursor.(string)
 	if ok && asString != "" {

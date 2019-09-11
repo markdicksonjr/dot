@@ -183,7 +183,7 @@ func TestGetInt64(t *testing.T) {
 
 	// test that coercion on explicit int64
 	if GetInt64(data, "a.f") != 9 {
-		t.Error("GetInt64 on explicity int64 not correct")
+		t.Error("GetInt64 on explicitly int64 not correct")
 	}
 
 	// test fallback
