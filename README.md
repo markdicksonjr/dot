@@ -92,6 +92,12 @@ testStruct := TestStruct{
 keysFromStruct := dot.Keys(testStruct)
 ```
 
+### Extend
+
+Writes any non-nil, non-default value from the right object to the left object.
+
+TODO: example needed
+
 ### KeysRecursive
 
 Just like Keys, only recursive

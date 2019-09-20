@@ -1,5 +1,7 @@
 package dot
 
+import "reflect"
+
 // Extend copies non-nil, non-default values from right to left
 func Extend(to interface{}, from interface{}) error {
 
@@ -13,11 +15,6 @@ func Extend(to interface{}, from interface{}) error {
 		// if a non-nil, non-default value is encountered, allow it to overwrite
 
 		if i == nil {
-			continue
-		}
-
-		// though we check nil above, also check typed nil against pointer interface-cast nil (a Go gotcha)
-		if iAsInterface, ok := i.(*interface{}); ok && iAsInterface == nil {
 			continue
 		}
 
@@ -38,6 +35,12 @@ func Extend(to interface{}, from interface{}) error {
 
 		iAsCoercedFloat, ok := CoerceFloat64(i)
 		if ok && iAsCoercedFloat == 0 {
+			continue
+		}
+
+		// if it's an empty slice, skip
+		val := reflect.ValueOf(i)
+		if val.Type().Kind() == reflect.Slice && val.Len() == 0 {
 			continue
 		}
 

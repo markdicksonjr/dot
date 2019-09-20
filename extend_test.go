@@ -111,3 +111,42 @@ func TestExtend(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestExtend_Struct(t *testing.T) {
+	type TestNested struct {
+		A string
+	}
+
+	type Test struct {
+		Active           bool
+		Watchers         []TestNested
+	}
+
+	testTo := Test{}
+
+	testFrom := Test{
+		Active:   true,
+		Watchers: []TestNested{
+			{
+				A: "Chrys",
+			},
+		},
+	}
+
+	testUnset := Test{
+		Active:   false,
+		Watchers: nil,
+	}
+
+	if err := Extend(&testTo, &testFrom); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := Extend(&testTo, &testUnset); err != nil {
+		t.Fatal(err)
+	}
+
+	if len(testTo.Watchers) == 0 {
+		t.Fatal("nil struct overwrote non-nil struct")
+	}
+}
