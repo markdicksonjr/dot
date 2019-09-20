@@ -16,6 +16,11 @@ func Extend(to interface{}, from interface{}) error {
 			continue
 		}
 
+		// though we check nil above, also check typed nil against interface-cast nil (a Go gotcha)
+		if iAsInterface, ok := i.(interface{}); ok && iAsInterface == nil {
+			continue
+		}
+
 		iAsBool, ok := i.(bool)
 		if ok && !iAsBool {
 			continue
