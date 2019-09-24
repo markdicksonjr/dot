@@ -2,6 +2,23 @@ package dot
 
 import "testing"
 
+type InnermostStruct struct {
+	G map[string]interface{}
+}
+
+type InnerStruct struct {
+	X string
+	Y *string
+	Z InnermostStruct
+}
+
+type SampleStruct struct {
+	A float64
+	B int
+	C string
+	D InnerStruct
+}
+
 func TestTopLevelSet(t *testing.T) {
 
 	// first, test using a map
@@ -18,17 +35,7 @@ func TestTopLevelSet(t *testing.T) {
 		t.Fatal("Did not get an error when setting on a nil object")
 	}
 
-	// now, test using a struct
-	type InnerStruct struct {
-		X string
-		Y *string
-	}
-	type SampleStruct struct {
-		A float64
-		B int
-		C string
-		D InnerStruct
-	}
+	// now, test using structs
 	s := SampleStruct{}
 
 	// test a non-pointer struct usage
@@ -58,16 +65,16 @@ func TestTopLevelSet(t *testing.T) {
 	if f != "t" {
 		t.Fatal("Did not get back what was set on nested struct")
 	}
+}
 
-	//err = Set(&s, "D.Y", "q")
-	//if err != nil {
-	//	t.Fatal("Got an error when setting pointer sub-struct")
-	//}
-	//
-	//g, _ := Get(&s, "D.Y")
-	//if g != "q" {
-	//	t.Fatal("Did not get back what was set on nested pointer struct")
-	//}
+func TestSet_NestedCreateRequired(t *testing.T) {
+	s := SampleStruct{}
+	err := Set(&s, "D.Z.G.P", map[string]interface{}{
+		"h": 6,
+	})
+	if err != nil {
+		t.Fatal("Got an error when setting non-pointer sub-struct")
+	}
 }
 
 func TestSet_BlankKey(t *testing.T) {

@@ -126,11 +126,16 @@ func TestKeysRecursive(t *testing.T) {
 		t.Fail()
 	}
 
+	type TestInnerStruct struct {
+		F bool
+	}
+
 	type TestStruct struct {
 		A bool
 		B map[string]interface{}
 		C string
 		D int64
+		E []TestInnerStruct
 	}
 
 	testStruct := TestStruct{
@@ -140,11 +145,16 @@ func TestKeysRecursive(t *testing.T) {
 		},
 		C: "4",
 		D: 7,
+		E: []TestInnerStruct{
+			{
+				F: true,
+			},
+		},
 	}
 
-	keysFromStruct := Keys(testStruct)
+	keysFromStruct := KeysRecursive(testStruct)
 
-	if len(keysFromStruct) != 4 {
+	if len(keysFromStruct) != 6 {
 		t.Fail()
 	}
 
@@ -152,10 +162,15 @@ func TestKeysRecursive(t *testing.T) {
 		t.Fail()
 	}
 
-	// now, try again with a parent path
-	keysFromStruct = Keys(testStruct, "data.raw")
+	// keys from nested arrays should not be included
+	if contains(keysFromStruct, "E.F") {
+		t.Fail()
+	}
 
-	if len(keysFromStruct) != 4 {
+	// now, try again with a parent path
+	keysFromStruct = KeysRecursive(testStruct, "data.raw")
+
+	if len(keysFromStruct) != 6 {
 		t.Fail()
 	}
 

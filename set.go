@@ -55,37 +55,40 @@ func Set(obj interface{}, prop string, value interface{}) error {
 		effectiveObj = asMap
 	}
 
-	// get each level of property, all the way down to the leaf
+	var deepestSetObj = obj
+	var tempObj interface{}
+	var deepestSetPathIndex int
 	last, arr := arr[len(arr)-1], arr[:len(arr)-1]
-	for _, key = range arr {
-		effectiveObj, err = getProperty(effectiveObj, key)
+
+	// get each level of property, all the way down to the leaf
+	for deepestSetPathIndex, key = range arr {
+		tempObj, err = getProperty(effectiveObj, key)
 		if err != nil {
 			break
 		}
+
+		if tempObj == nil {
+			effectiveObj = nil
+			break
+		}
+
+		effectiveObj = tempObj
+		deepestSetObj = tempObj
 	}
 
 	// if we need to allocate all the way down to the object
 	if effectiveObj == nil {
-		propPath := strings.Split(prop, ".")
-
-		// if we're at the end of props
-		if len(propPath) == 1 {
-			if err := setProperty(obj, propPath[0], value); err != nil {
-				return err
-			}
-			return nil
-		}
-
-		if err := setProperty(obj, propPath[0], make(map[string]interface{})); err != nil {
+		if err := setProperty(deepestSetObj, key, make(map[string]interface{})); err != nil {
 			return err
 		}
 
-		innerProp, err := getProperty(obj, propPath[0])
+		innerProp, err := getProperty(deepestSetObj, key)
 		if err != nil {
 			return err
 		}
 
-		return Set(innerProp, strings.Join(propPath[1:], "."), value)
+		propPath := strings.Split(prop, ".")
+		return Set(innerProp, strings.Join(propPath[deepestSetPathIndex+1:], "."), value)
 	}
 
 	if fullMap != nil {
