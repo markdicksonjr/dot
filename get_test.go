@@ -287,3 +287,13 @@ func TestGetStringFallbackMiss(t *testing.T) {
 		t.Error("result did not equal '' when no match was found during fallback")
 	}
 }
+
+func TestCoerceStringFromBool(t *testing.T) {
+	if v, ok := CoerceString(true); ok == false || v != "true" {
+		t.Error("result did not equal 'true' when coercing string")
+	}
+
+	if v, ok := CoerceString(false); ok == false || v != "false" {
+		t.Error("result did not equal 'false' when coercing string")
+	}
+}

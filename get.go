@@ -234,6 +234,11 @@ func CoerceString(objCursor interface{}) (string, bool) {
 		return strconv.Itoa(int(asInt64)), true
 	}
 
+	asBool, ok := objCursor.(bool)
+	if ok {
+		return strconv.FormatBool(asBool), true
+	}
+
 	return "", false
 }
 
