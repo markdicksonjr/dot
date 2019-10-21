@@ -44,6 +44,11 @@ func Extend(to interface{}, from interface{}) error {
 			continue
 		}
 
+		// if it's a nil map, simply checking nil won't do - use reflect :(
+		if val.Type().Kind() == reflect.Map && val.IsNil() {
+			continue
+		}
+
 		if err := Set(to, k, i); err != nil {
 			return err
 		}

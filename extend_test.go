@@ -118,14 +118,19 @@ func TestExtend_Struct(t *testing.T) {
 	}
 
 	type Test struct {
-		Active           bool
-		Watchers         []TestNested
+		Active    bool
+		Watchers  []TestNested
+		SimpleMap map[string]interface{}
 	}
 
-	testTo := Test{}
+	testTo := Test{
+		SimpleMap: map[string]interface{}{
+			"1": "2",
+		},
+	}
 
 	testFrom := Test{
-		Active:   true,
+		Active: true,
 		Watchers: []TestNested{
 			{
 				A: "Chrys",
@@ -140,6 +145,10 @@ func TestExtend_Struct(t *testing.T) {
 
 	if err := Extend(&testTo, &testFrom); err != nil {
 		t.Fatal(err)
+	}
+
+	if len(testTo.SimpleMap) == 0 {
+		t.Fail()
 	}
 
 	if err := Extend(&testTo, &testUnset); err != nil {
