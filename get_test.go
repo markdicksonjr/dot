@@ -199,6 +199,8 @@ func TestGetFloat64(t *testing.T) {
 	a["c"] = 6.5
 	a["d"] = float32(7.8)
 	a["e"] = "should be 0"
+	a["f"] = "32.5"
+	a["g"] = []byte("61.8")
 	data["a"] = a
 
 	// test coercion of int
@@ -219,6 +221,16 @@ func TestGetFloat64(t *testing.T) {
 	// test that incompatible coercion results in 0
 	if GetFloat64(data, "a.e") != 0 { // will be some rounding error in float32
 		t.Error("a.e was not 0")
+	}
+
+	// test that coercion on string rep of float yields the float val
+	if GetFloat64(data, "a.f") != 32.5 {
+		t.Error("GetFloat64 on '32.5' was not 32.5")
+	}
+
+	// test that coercion on byte slice rep of float yields the float val
+	if GetFloat64(data, "a.g") != 61.8 {
+		t.Error("GetFloat64 on byte rep of '61.8' was not 61.8")
 	}
 
 	// test that coercion on nil results in 0

@@ -213,6 +213,22 @@ func CoerceFloat64(obj interface{}) (float64, bool) {
 		return float64(asInt32), true
 	}
 
+	asString, ok := obj.(string)
+	if ok {
+		floatVal, err := strconv.ParseFloat(asString, 64)
+		if err == nil {
+			return floatVal, true
+		}
+	}
+
+	asBytes, ok := obj.([]byte)
+	if ok {
+		floatVal, err := strconv.ParseFloat(string(asBytes), 64)
+		if err == nil {
+			return floatVal, true
+		}
+	}
+
 	return 0, false
 }
 
