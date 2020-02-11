@@ -121,6 +121,19 @@ func TestGet_Struct(t *testing.T) {
 	}
 }
 
+func TestGet_EscapedDotInMap(t *testing.T) {
+	tMap := map[string]interface{} {
+		"t.b": "r",
+	}
+	res, err := Get(tMap, "t\\.b")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if res == nil {
+		t.Fatal("unexpected nil result")
+	}
+}
+
 func BenchmarkGet_Map(b *testing.B) {
 	data := map[string]interface{}{
 		"A": map[string]interface{}{

@@ -31,7 +31,8 @@ func Set(obj interface{}, prop string, value interface{}) error {
 	}
 
 	// get the array access
-	arr := strings.Split(prop, ".")
+	// TODO: improve escape mechanism for \.
+	arr := strings.Split(strings.ReplaceAll(prop, "\\.", "\a"), ".")
 
 	var err error
 	var key string
@@ -59,10 +60,11 @@ func Set(obj interface{}, prop string, value interface{}) error {
 	var tempObj interface{}
 	var deepestSetPathIndex int
 	last, arr := arr[len(arr)-1], arr[:len(arr)-1]
+	last = strings.ReplaceAll(last, "\a", ".")
 
 	// get each level of property, all the way down to the leaf
 	for deepestSetPathIndex, key = range arr {
-		tempObj, err = getProperty(effectiveObj, key)
+		tempObj, err = getProperty(effectiveObj, strings.ReplaceAll(key, "\a", "\\."))
 		if err != nil {
 			break
 		}

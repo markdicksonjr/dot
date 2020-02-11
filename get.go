@@ -27,11 +27,17 @@ func Get(obj interface{}, props ...string) (interface{}, error) {
 		// initialize a cursor for the current descendent of obj
 		objCursor := obj
 
+		// TODO: improve, feels hacky - we replace escaped . to "beep", then replace again before mapping
+		// we want to allow users to use backslash to escape periods in case the prop
+		// names have periods - we need to make some method of letting users do this
+		rep := strings.ReplaceAll(prop, "\\.", "\a")
+
 		// continue to follow the dot-path, using the cursor
-		for _, key := range strings.Split(prop, ".") {
+		for _, key := range strings.Split(rep, ".") {
 
 			// get the value one level down from the objCursor
-			if objCursor, err = getProperty(objCursor, key); err != nil {
+			//
+			if objCursor, err = getProperty(objCursor, strings.ReplaceAll(key, "\a", ".")); err != nil {
 
 				// if we can't follow the path, mark it as the most recent error and move to the next property option
 				lastError = err

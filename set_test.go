@@ -67,6 +67,30 @@ func TestTopLevelSet(t *testing.T) {
 	}
 }
 
+
+func TestSet_EscapedDotInMap(t *testing.T) {
+	tMap := map[string]interface{} {}
+	err := Set(tMap, "t\\.b", "r")
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = Set(tMap, "t.a", "r")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if tMap["t.a"] != nil {
+		t.Fatal("unexpected nil result")
+	}
+	if tMap["t.b"] == nil {
+		t.Fatal("unexpected nil result")
+	}
+
+	s, _ := tMap["t.b"].(string)
+	if s != "r" {
+		t.Fatal("value not correct for escape dot set")
+	}
+}
+
 func TestSet_NestedCreateRequired(t *testing.T) {
 	s := SampleStruct{}
 	err := Set(&s, "D.Z.G.P", map[string]interface{}{
