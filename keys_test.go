@@ -22,12 +22,13 @@ func TestKeys(t *testing.T) {
 			"3":   4,
 			"a":   "h",
 		},
+		"j": nil,
 	}
 
 	// try root-level keys without a parent path
 	keysFromMap := Keys(mapTest)
 
-	if len(keysFromMap) != 5 {
+	if len(keysFromMap) != 6 {
 		t.Fail()
 	}
 
@@ -38,7 +39,7 @@ func TestKeys(t *testing.T) {
 	// now, try root-level keys again with a parent path
 	keysFromMap = Keys(mapTest, "root.data")
 
-	if len(keysFromMap) != 5 {
+	if len(keysFromMap) != 6 {
 		t.Fail()
 	}
 
@@ -99,29 +100,32 @@ func TestKeysRecursive(t *testing.T) {
 			"3":   4,
 			"a":   "h",
 		},
+		"j": nil,
 	}
 	// try recursive keys without a parent path
 	deepKeysFromMap := KeysRecursive(mapTest)
-	if len(deepKeysFromMap) != 9 {
+	if len(deepKeysFromMap) != 10 {
 		t.Fail()
 	}
 
 	if !contains(deepKeysFromMap, "one") || !contains(deepKeysFromMap, "two") || !contains(deepKeysFromMap, "3") ||
 		!contains(deepKeysFromMap, "a") || !contains(deepKeysFromMap, "d") || !contains(deepKeysFromMap, "d.one") ||
-		!contains(deepKeysFromMap, "d.two") || !contains(deepKeysFromMap, "d.3") || !contains(deepKeysFromMap, "d.a") {
+		!contains(deepKeysFromMap, "d.two") || !contains(deepKeysFromMap, "d.3") || !contains(deepKeysFromMap, "d.a") ||
+		!contains(deepKeysFromMap, "j") {
 
 		t.Fail()
 	}
 
 	// try recursive keys with a parent path
 	deepKeysFromMap = KeysRecursive(mapTest, "top.root.node")
-	if len(deepKeysFromMap) != 9 {
+	if len(deepKeysFromMap) != 10 {
 		t.Fail()
 	}
 
 	if !contains(deepKeysFromMap, "top.root.node.one") || !contains(deepKeysFromMap, "top.root.node.two") || !contains(deepKeysFromMap, "top.root.node.3") ||
 		!contains(deepKeysFromMap, "top.root.node.a") || !contains(deepKeysFromMap, "top.root.node.d") || !contains(deepKeysFromMap, "top.root.node.d.one") ||
-		!contains(deepKeysFromMap, "top.root.node.d.two") || !contains(deepKeysFromMap, "top.root.node.d.3") || !contains(deepKeysFromMap, "top.root.node.d.a") {
+		!contains(deepKeysFromMap, "top.root.node.d.two") || !contains(deepKeysFromMap, "top.root.node.d.3") || !contains(deepKeysFromMap, "top.root.node.d.a") ||
+		!contains(deepKeysFromMap, "top.root.node.j") {
 
 		t.Fail()
 	}
@@ -191,29 +195,32 @@ func TestKeysRecursiveLeaves(t *testing.T) {
 			"8": 4,
 			"z": "h",
 		},
+		"j": nil,
 	}
 	// try recursive keys without a parent path
 	deepKeysFromMap := KeysRecursiveLeaves(mapTest)
-	if len(deepKeysFromMap) != 8 {
+	if len(deepKeysFromMap) != 9 {
 		t.Fail()
 	}
 
 	if !contains(deepKeysFromMap, "one") || !contains(deepKeysFromMap, "two") || !contains(deepKeysFromMap, "3") ||
 		!contains(deepKeysFromMap, "a") || !contains(deepKeysFromMap, "d.6") ||
-		!contains(deepKeysFromMap, "d.7") || !contains(deepKeysFromMap, "d.8") || !contains(deepKeysFromMap, "d.z") {
+		!contains(deepKeysFromMap, "d.7") || !contains(deepKeysFromMap, "d.8") || !contains(deepKeysFromMap, "d.z") ||
+		!contains(deepKeysFromMap, "j") {
 
 		t.Fail()
 	}
 
 	// try recursive keys with a parent path
 	deepKeysFromMap = KeysRecursiveLeaves(mapTest, "top.root.node")
-	if len(deepKeysFromMap) != 8 {
+	if len(deepKeysFromMap) != 9 {
 		t.Fail()
 	}
 
 	if !contains(deepKeysFromMap, "top.root.node.one") || !contains(deepKeysFromMap, "top.root.node.two") || !contains(deepKeysFromMap, "top.root.node.3") ||
 		!contains(deepKeysFromMap, "top.root.node.a") || !contains(deepKeysFromMap, "top.root.node.d.6") ||
-		!contains(deepKeysFromMap, "top.root.node.d.7") || !contains(deepKeysFromMap, "top.root.node.d.8") || !contains(deepKeysFromMap, "top.root.node.d.z") {
+		!contains(deepKeysFromMap, "top.root.node.d.7") || !contains(deepKeysFromMap, "top.root.node.d.8") || !contains(deepKeysFromMap, "top.root.node.d.z") ||
+		!contains(deepKeysFromMap, "top.root.node.j") {
 
 		t.Fail()
 	}

@@ -99,6 +99,8 @@ func KeysRecursiveLeaves(obj interface{}, parentPath ...string) []string {
 			} else {
 				allKeys = append(allKeys, leaves...)
 			}
+		} else {
+			allKeys = append(allKeys, adjustedChildPath)
 		}
 	}
 
