@@ -140,6 +140,7 @@ func TestKeysRecursive(t *testing.T) {
 		C string
 		D int64
 		E []TestInnerStruct
+		F *string
 	}
 
 	testStruct := TestStruct{
@@ -154,11 +155,12 @@ func TestKeysRecursive(t *testing.T) {
 				F: true,
 			},
 		},
+		F: nil,
 	}
 
 	keysFromStruct := KeysRecursive(testStruct)
 
-	if len(keysFromStruct) != 6 {
+	if len(keysFromStruct) != 7 {
 		t.Fail()
 	}
 
@@ -174,7 +176,7 @@ func TestKeysRecursive(t *testing.T) {
 	// now, try again with a parent path
 	keysFromStruct = KeysRecursive(testStruct, "data.raw")
 
-	if len(keysFromStruct) != 6 {
+	if len(keysFromStruct) != 7 {
 		t.Fail()
 	}
 

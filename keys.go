@@ -1,6 +1,9 @@
 package dot
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"reflect"
+)
 
 // Keys will get the list of keys for an arbitrary structure (non-recursively).  In the result below, the result will
 // be ["A", "B"], though it's best to not assume the elements are ordered.
@@ -27,7 +30,62 @@ func Keys(obj interface{}, parentPath ...string) []string {
 		return keys
 	}
 
-	// TODO: find faster way
+	defer func() {
+		if r := recover(); r != nil {
+			_ = r
+		}
+	}()
+	var keys []string
+	fields := reflect.TypeOf(obj)
+	if fields.Kind() == reflect.Struct {
+		num := fields.NumField()
+		for i := 0; i < num; i++ {
+			field := fields.Field(i)
+			keys = append(keys, field.Name)
+		}
+	} else if fields.Kind() == reflect.Ptr {
+		fields = fields.Elem()
+		num := fields.NumField()
+		for i := 0; i < num; i++ {
+			field := fields.Field(i)
+			keys = append(keys, field.Name)
+		}
+	}
+
+	for i, k := range keys {
+		adjustedKey := k
+		if len(strParentPath) > 0 {
+			adjustedKey = strParentPath + "." + adjustedKey
+		}
+		keys[i] = adjustedKey
+	}
+	return keys
+}
+
+func KeysWithoutReflection(obj interface{}, parentPath ...string) []string {
+	if obj == nil {
+		return []string{}
+	}
+
+	strParentPath := ""
+	if len(parentPath) > 0 {
+		strParentPath = parentPath[0]
+	}
+
+	asMap, ok := obj.(map[string]interface{})
+	if ok {
+		var keys []string
+		for k := range asMap {
+			adjustedKey := k
+			if len(strParentPath) > 0 {
+				adjustedKey = strParentPath + "." + adjustedKey
+			}
+			keys = append(keys, adjustedKey)
+		}
+		return keys
+	}
+
+	// TODO: find faster way - this way also does not include nils where omitempty is specified
 
 	// json to str, str to map
 	strJson, err := json.Marshal(obj)
