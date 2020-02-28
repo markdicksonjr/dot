@@ -9,7 +9,7 @@ import (
 // be ["A", "B"], though it's best to not assume the elements are ordered.
 func Keys(obj interface{}, parentPath ...string) []string {
 	if obj == nil {
-		return []string{}
+		return nil
 	}
 
 	strParentPath := ""
@@ -136,6 +136,10 @@ func KeysRecursive(obj interface{}, parentPath ...string) []string {
 
 // KeysRecursiveLeaves is like KeysRecursive, except it returns only items with no "children"
 func KeysRecursiveLeaves(obj interface{}, parentPath ...string) []string {
+	if obj == nil {
+		return nil
+	}
+
 	strParentPath := ""
 	if len(parentPath) > 0 {
 		strParentPath = parentPath[0]

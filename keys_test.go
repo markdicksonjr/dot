@@ -1,6 +1,9 @@
 package dot
 
-import "testing"
+import (
+	"log"
+	"testing"
+)
 
 func TestKeys(t *testing.T) {
 	if len(Keys(nil)) != 0 {
@@ -89,6 +92,11 @@ func TestKeys(t *testing.T) {
 }
 
 func TestKeysRecursive(t *testing.T) {
+	emptyKeyTest := KeysRecursive(nil)
+	if len(emptyKeyTest) > 0 {
+		log.Fatal("non-empty key list returned on nil object")
+	}
+
 	mapTest := map[string]interface{}{
 		"one": 1,
 		"two": 3,
@@ -186,6 +194,11 @@ func TestKeysRecursive(t *testing.T) {
 }
 
 func TestKeysRecursiveLeaves(t *testing.T) {
+	emptyKeyTest := KeysRecursiveLeaves(nil)
+	if len(emptyKeyTest) > 0 {
+		log.Fatal("non-empty key list returned on nil object")
+	}
+
 	mapTest := map[string]interface{}{
 		"one": 1,
 		"two": 3,
