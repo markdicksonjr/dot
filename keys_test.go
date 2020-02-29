@@ -149,6 +149,7 @@ func TestKeysRecursive(t *testing.T) {
 		D int64
 		E []TestInnerStruct
 		F *string
+		G *TestInnerStruct
 	}
 
 	testStruct := TestStruct{
@@ -168,7 +169,7 @@ func TestKeysRecursive(t *testing.T) {
 
 	keysFromStruct := KeysRecursive(testStruct)
 
-	if len(keysFromStruct) != 7 {
+	if len(keysFromStruct) != 9 {
 		t.Fail()
 	}
 
@@ -184,11 +185,11 @@ func TestKeysRecursive(t *testing.T) {
 	// now, try again with a parent path
 	keysFromStruct = KeysRecursive(testStruct, "data.raw")
 
-	if len(keysFromStruct) != 7 {
+	if len(keysFromStruct) != 9 {
 		t.Fail()
 	}
 
-	if !contains(keysFromStruct, "data.raw.A") || !contains(keysFromStruct, "data.raw.B") || !contains(keysFromStruct, "data.raw.C") || !contains(keysFromStruct, "data.raw.D") {
+	if !contains(keysFromStruct, "data.raw.A") || !contains(keysFromStruct, "data.raw.B") || !contains(keysFromStruct, "data.raw.C") || !contains(keysFromStruct, "data.raw.D")  || !contains(keysFromStruct, "data.raw.G") || !contains(keysFromStruct, "data.raw.G.F") {
 		t.Fail()
 	}
 }

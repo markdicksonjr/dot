@@ -298,6 +298,11 @@ func getProperty(obj interface{}, prop string) (interface{}, error) {
 			return nil, errors.New("property " + prop + " not found")
 		}
 		return idx.Interface(), nil
+	} else if kind == reflect.Ptr {
+		if reflect.ValueOf(obj).IsNil() {
+			return nil, nil
+		}
+		return reflections.GetField(obj, strings.Title(prop))
 	}
 
 	return reflections.GetField(obj, strings.Title(prop))
