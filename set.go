@@ -38,6 +38,7 @@ func Set(obj interface{}, prop string, value interface{}) error {
 	var key string
 	var fullMap map[string]interface{}
 	var effectiveObj = obj
+	var deepestSetObj = obj
 
 	// adjust a struct to be a map TODO: improve for performance concerns (and code cleanliness)
 	effReflect := reflect.TypeOf(effectiveObj)
@@ -54,9 +55,9 @@ func Set(obj interface{}, prop string, value interface{}) error {
 
 		fullMap = asMap
 		effectiveObj = asMap
+		deepestSetObj = asMap
 	}
 
-	var deepestSetObj = obj
 	var tempObj interface{}
 	var deepestSetPathIndex int
 	last, arr := arr[len(arr)-1], arr[:len(arr)-1]

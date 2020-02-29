@@ -131,6 +131,24 @@ func TestSimpleTwoLevelSet(t *testing.T) {
 	if a.(string) != "hoo" {
 		t.Fatal("F.A != hoo")
 	}
+
+	type InnerTestStruct struct {
+		Name string
+		Type *string
+	}
+	type TestStruct struct {
+		Inner InnerTestStruct
+	}
+
+	testObj := TestStruct{}
+	if err := Set(&testObj, "Inner.Name", "bob"); err != nil {
+		t.Fatal(err)
+	}
+
+	bob := GetString(testObj, "Inner.Name")
+	if bob != "bob" {
+		t.Fatal("could not validate set on struct")
+	}
 }
 
 func TestEndsWithPeriod(t *testing.T) {
