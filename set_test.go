@@ -116,7 +116,7 @@ func TestSet_BlankKey(t *testing.T) {
 	}
 }
 
-func TestSimpleTwoLevelSet(t *testing.T) {
+func TestSimpleTwoLevelSetMap(t *testing.T) {
 	obj := make(map[string]interface{})
 	err := Set(obj, "F.A", "hoo")
 	if err != nil {
@@ -131,13 +131,14 @@ func TestSimpleTwoLevelSet(t *testing.T) {
 	if a.(string) != "hoo" {
 		t.Fatal("F.A != hoo")
 	}
-
+}
+func TestSimpleTwoLevelSetStruct(t *testing.T) {
 	type InnerTestStruct struct {
-		Name string
-		Type *string
+		Name string  `json:"name"`
+		Type *string `json:"type"`
 	}
 	type TestStruct struct {
-		Inner InnerTestStruct
+		Inner InnerTestStruct `json:"inner"`
 	}
 
 	testObj := TestStruct{}

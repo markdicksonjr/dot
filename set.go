@@ -34,29 +34,22 @@ func Set(obj interface{}, prop string, value interface{}) error {
 	// TODO: improve escape mechanism for \.
 	arr := strings.Split(strings.ReplaceAll(prop, "\\.", "\a"), ".")
 
+	// adjust a struct to be a map TODO: improve for performance concerns (and code cleanliness)
+	effReflect := reflect.TypeOf(obj)
+	if effReflect.Kind() == reflect.Ptr && effReflect.Elem().Kind() == reflect.Struct {
+		field := strings.ReplaceAll(arr[0], "\a", ".")
+		if len(arr) == 1 {
+			return setProperty(obj, field, value)
+		}
+
+		return Set(reflect.ValueOf(obj).Elem().FieldByName(field).Addr().Interface(), strings.Join(arr[1:], "."), value)
+	}
+
 	var err error
 	var key string
 	var fullMap map[string]interface{}
 	var effectiveObj = obj
 	var deepestSetObj = obj
-
-	// adjust a struct to be a map TODO: improve for performance concerns (and code cleanliness)
-	effReflect := reflect.TypeOf(effectiveObj)
-	if effReflect.Kind() == reflect.Ptr && effReflect.Elem().Kind() == reflect.Struct {
-		s, err := json.Marshal(effectiveObj)
-		if err != nil {
-			return err
-		}
-
-		var asMap map[string]interface{}
-		if err := json.Unmarshal(s, &asMap); err != nil {
-			return err
-		}
-
-		fullMap = asMap
-		effectiveObj = asMap
-		deepestSetObj = asMap
-	}
 
 	var tempObj interface{}
 	var deepestSetPathIndex int
