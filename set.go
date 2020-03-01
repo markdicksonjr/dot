@@ -42,7 +42,19 @@ func Set(obj interface{}, prop string, value interface{}) error {
 			return setProperty(obj, field, value)
 		}
 
-		return Set(reflect.ValueOf(obj).Elem().FieldByName(field).Addr().Interface(), strings.Join(arr[1:], "."), value)
+		fieldVal := reflect.ValueOf(obj).Elem().FieldByName(field)
+		fieldType := reflect.TypeOf(fieldVal.Interface())
+
+		// missing maps must be allocated with MakeMap
+		if fieldType.Kind() == reflect.Map && fieldVal.IsNil() {
+			newMap := reflect.MakeMap(fieldType).Interface()
+			if err := setProperty(obj, field, newMap); err != nil {
+				return err
+			}
+			return Set(newMap, strings.Join(arr[1:], "."), value)
+		}
+
+		return Set(fieldVal.Addr().Interface(), strings.Join(arr[1:], "."), value)
 	}
 
 	var err error
