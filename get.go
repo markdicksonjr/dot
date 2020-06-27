@@ -152,6 +152,22 @@ func CoerceInt64(obj interface{}) (int64, bool) {
 		return int64(fromFloat32), true
 	}
 
+	asString, ok := obj.(string)
+	if ok {
+		intVal, err := strconv.Atoi(asString)
+		if err == nil {
+			return int64(intVal), true
+		}
+	}
+
+	asBytes, ok := obj.([]byte)
+	if ok {
+		intVal, err := strconv.Atoi(string(asBytes))
+		if err == nil {
+			return int64(intVal), true
+		}
+	}
+
 	return 0, false
 }
 
