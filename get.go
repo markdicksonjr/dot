@@ -262,6 +262,11 @@ func CoerceString(objCursor interface{}) (string, bool) {
 		return asString, true
 	}
 
+	asStringPtr, ok := objCursor.(*string)
+	if ok && asStringPtr != nil {
+		return *asStringPtr, true
+	}
+
 	asFloat64, ok := CoerceFloat64(objCursor)
 	if ok {
 		return strconv.FormatFloat(asFloat64, 'f', -1, 64), true

@@ -313,6 +313,13 @@ func TestGetStringFallbackMiss(t *testing.T) {
 	}
 }
 
+func TestCoerceStringFromPtr(t *testing.T) {
+	str := "test"
+	if v, ok := CoerceString(&str); ok == false || v != "test" {
+		t.Error("result did not equal 'test' when coercing string pointer")
+	}
+}
+
 func TestCoerceStringFromBool(t *testing.T) {
 	if v, ok := CoerceString(true); ok == false || v != "true" {
 		t.Error("result did not equal 'true' when coercing string")
